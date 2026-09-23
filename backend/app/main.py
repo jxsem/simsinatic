@@ -22,6 +22,7 @@ class Earthquake(BaseModel):
     depth_km: float
     latitude: float
     longitude: float
+    tsunami: int
     time: datetime #Del import time, se usa el tipo de dato tiempo
 
 @app.get("/")
@@ -49,7 +50,7 @@ async def obtenerTerremotos(min_magnitude: Annotated[float, Query(ge=0, le=10)] 
         earthquakes = []
         for event in data["features"]: #data es todo el json, y features es una lista que esta fuera de las demas listas, no es como por ejemplo properties
             event_id = event["id"]
-            #Sacar propiedades y coordenadas fuera para reconstruir
+            #Sacar propiedades y coordenadas fuera para reconstruir, ya que esta el diccionario dentro de otro
             props = event["properties"]
             coords = event["geometry"]["coordinates"]
             mag = props["mag"]
@@ -60,9 +61,10 @@ async def obtenerTerremotos(min_magnitude: Annotated[float, Query(ge=0, le=10)] 
             depth_km = coords[2]
             latitude = coords[1]
             longitude = coords[0]
+            tsunami = props["tsunami"]
             place = props["place"]
             #se añaden a la lista con las propiedades de la clase Earthquake
-            earthquakes.append(Earthquake(id=event_id, place=place, magnitude=mag, depth_km=depth_km, latitude=latitude, longitude=longitude, time=time))
+            earthquakes.append(Earthquake(id=event_id, place=place, magnitude=mag, depth_km=depth_km, latitude=latitude, longitude=longitude, tsunami=tsunami, time=time))
             #se ordena la lista de terremotos por magnitud
         earthquakes.sort(key=lambda eq: eq.magnitude, reverse=True) #lambda eq: significa: "Para cada elemento de la lista, llámalo temporalmente earthquake."
         return earthquakes[:limit]
