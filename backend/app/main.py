@@ -46,7 +46,7 @@ def status():
 '''
 httpx -> consumir apis en python
 '''
-USGS_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson"
+USGS_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
 @app.get("/earthquakes", response_model=list[Earthquake]) #Significa que la respuesta que devuelve ese endpoint debe tener una estructura correspondiente a una lista de objetos, response_model es un parámetro que acepta el decorador app.get() de FastAPI que utiliza response_model para saber qué estructura debe tener la respuesta de tu endpoint, en base al modelo que se ha creado
 async def obtenerTerremotos(min_magnitude: Annotated[float, Query(ge=0, le=10)] = 0, limit: Annotated[int, Query(ge=1, le=500)] = 100): #PARAMETROS DE QUERY
     async with httpx.AsyncClient(timeout=10) as client:

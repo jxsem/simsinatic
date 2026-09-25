@@ -11,11 +11,11 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route 
-                    path="/"
+                    path="/earthquakes"
                     element={<EarthquakeList />}
                 />
                 <Route
-                    path="/spain"
+                    path="/earthquakes/spain"
                     element={<EarthquakesSpainList />}
                 />
             </Routes>
