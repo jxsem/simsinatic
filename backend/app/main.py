@@ -61,23 +61,26 @@ async def obtenerTerremotos(min_magnitude: Annotated[float, Query(ge=0, le=10)] 
         #preparas la lista vacia para devolverla mas adelante con el modelo creado
         earthquakes = []
         for event in data["features"]: #data es todo el json, y features es una lista que esta fuera de las demas listas, no es como por ejemplo properties
-            event_id = event["id"]
             #Sacar propiedades y coordenadas fuera para reconstruir, ya que esta el diccionario dentro de otro
-            props = event["properties"]
-            coords = event["geometry"]["coordinates"]
-            mag = props["mag"]
-            if mag is None or mag < min_magnitude:
-                continue
-            time_ms = props["time"]
-            time = datetime.fromtimestamp(time_ms / 1000, tz=timezone.utc)
-            depth_km = coords[2]
-            latitude = coords[1]
-            longitude = coords[0]
-            tsunami = props["tsunami"]
-            place = props["place"]
-            #se añaden a la lista con las propiedades de la clase Earthquake
-            earthquakes.append(Earthquake(id=event_id, place=place, magnitude=mag, depth_km=depth_km, latitude=latitude, longitude=longitude, tsunami=tsunami, time=time))
-            #se ordena la lista de terremotos por magnitud
+            try:
+                event_id = event["id"]
+                props = event["properties"]
+                coords = event["geometry"]["coordinates"]
+                mag = props["mag"]
+                if mag is None or mag < min_magnitude:
+                    continue
+                time_ms = props["time"]
+                time = datetime.fromtimestamp(time_ms / 1000, tz=timezone.utc)
+                depth_km = coords[2]
+                latitude = coords[1]
+                longitude = coords[0]
+                tsunami = props["tsunami"]
+                place = props["place"]
+                earthquakes.append(Earthquake(id=event_id, place=place, magnitude=mag, depth_km=depth_km, latitude=latitude, longitude=longitude, tsunami=tsunami, time=time))
+                #se añaden a la lista con las propiedades de la clase Earthquake
+            except(KeyError, TypeError, ValueError):
+                continue     
+                #se ordena la lista de terremotos por magnitud
         earthquakes.sort(key=lambda eq: eq.magnitude, reverse=True) #lambda eq: significa: "Para cada elemento de la lista, llámalo temporalmente earthquake."
         return earthquakes[:limit]
 
@@ -116,25 +119,29 @@ async def obtenerTerremotosEspaña(min_magnitud: Annotated[float, Query(ge=0, le
 
         #RECORRER EL ARRAY Y SACAR PROPIEDADES
         for evento in data.get("features", []):
-            props = evento["properties"]
-            coordinates = evento["geometry"]["coordinates"]
-
-            event_id = props["evid"]
             
-            magnitud = float(props["mag"])
-            if magnitud < min_magnitud:
+            try:
+                props = evento["properties"]
+                coordinates = evento["geometry"]["coordinates"]
+
+                event_id = props["evid"]
+                
+                magnitud = float(props["mag"])
+                if magnitud < min_magnitud:
+                    continue
+                profundidad = float(props["depth"])
+
+                fecha = props["fecha"]
+
+                localidad = props["loc"].strip()
+
+                longitud = float(coordinates[0])
+                latitud = float(coordinates[1])
+
+                #dentro del for, por cada propiedad que encuentre en el json, se agrega al objeto earthquaque spain
+                earthquakeSpain.append(EarthquakeSpain(id=event_id, magnitud=magnitud, profundidad=profundidad, fecha=fecha, localidad=localidad, longitud=longitud, latitud=latitud))
+            except(KeyError, ValueError, TypeError):
                 continue
-            profundidad = float(props["depth"])
-
-            fecha = props["fecha"]
-
-            localidad = props["loc"].strip()
-
-            longitud = float(coordinates[0])
-            latitud = float(coordinates[1])
-
-            #dentro del for, por cada propiedad que encuentre en el json, se agrega al objeto earthquaque spain
-            earthquakeSpain.append(EarthquakeSpain(id=event_id, magnitud=magnitud, profundidad=profundidad, fecha=fecha, localidad=localidad, longitud=longitud, latitud=latitud))
         #creamos una lamda y que ordene esta lista por FECHA
         earthquakeSpain.sort(key=lambda eqSpain: eqSpain.fecha, reverse=True)
         return earthquakeSpain[:limit] #limite de terremotos con esa query
