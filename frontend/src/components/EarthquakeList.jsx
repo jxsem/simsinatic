@@ -1,65 +1,12 @@
-// Importamos los hooks fundamentales de React:
-// useState: Para gestionar el estado local (variables que al cambiar fuerzan un nuevo renderizado).
-// useEffect: Para ejecutar efectos secundarios (en este caso, peticiones HTTP a la API).
-import { useState, useEffect } from "react";
-
 // Importamos el componente hijo encargo de renderizar la tarjeta individual de cada terremoto.
 import EarthquakeCard from "./EarthquakeCard";
+import useEarthquakes from "./hooks/useEarthquakes";
+
 
 function EarthquakeList() {
-    // ESTADOS DEL COMPONENTE:
-    
-    // Almacena el listado de terremotos devuelto por la API.
-    // Se inicializa como un array vacío ([]) para evitar errores de tipo al mapearlo antes de recibir datos.
-    const [earthquakes, setEarthquakes] = useState([]);
-
-    // Guarda el valor del filtro de magnitud mínima.
-    // Se inicializa en 0 para pedir a la API todos los registros desde el inicio por defecto.
-    const [minMagnitude, setMinMagnitude] = useState(0);
-
-    // Estado booleano de retroalimentación de interfaz.
-    // Indica si hay una petición HTTP en curso para mostrar o no un indicador visual de carga.
-    const [isLoading, setIsLoading] = useState(false);
-
-    // Almacena mensajes de fallo si la petición HTTP falla.
-    // Se inicializa en null para indicar la ausencia predeterminada de errores.
-    const [error, setError] = useState(null);
-
-    // EFECTO SECUNDARIO (FETCH DE DATOS):
-    useEffect(() => {
-        // Definimos una función asíncrona interna porque el callback directo de useEffect NO puede ser async, por norma general se suele hacer funciones asincronas para tomar peticiones.
-        async function getEarthquakes() {
-            // Iniciamos la carga marcando el indicador como verdadero.
-            setIsLoading(true);
-            setError(null);
-            try {
-                // Realizamos la petición HTTP incluyendo la magnitud mínima actual como Query Parameter.
-                const response = await fetch(
-                    `http://localhost:8000/earthquakes?min_magnitude=${minMagnitude}`
-                );
-                if (!response.ok){
-                    throw new Error("Error al recibir terremotos en json")
-                }
-                // Convertimos la respuesta cruda en un objeto/array JS legible.
-                const data = await response.json();
-                // Actualizamos el estado con la lista devuelta, lo que desencadena un re-render con los nuevos datos.
-                setEarthquakes(data);
-            } catch (error) {
-                // Si hay un error de red o de parseo, capturamos el fallo y mostramos un mensaje amigable al usuario.
-                setError("No se pudieron cargar los terremotos");
-                setEarthquakes([])
-            } finally {
-                // Se ejecuta SIEMPRE al terminar la petición (sea éxito o error) para ocultar el estado de carga.
-                setIsLoading(false);
-            }
-        }
-        // Ejecutamos la función de consulta al montarse el componente o al cambiar la dependencia.
-        getEarthquakes();
-
-    // MATRIZ DE DEPENDENCIAS:
-    // El efecto se volverá a ejecutar AUTOMÁTICAMENTE cada vez que el valor de 'minMagnitude' cambie,
-    // garantizando que la API siempre traiga datos sincronizados con el filtro activo.
-    }, [minMagnitude]);
+    // Como tenemos el useEarthquakes solamente tenemos que adjuntarle los parametros que va a recibir (los estados)
+    const { earthquakes, minMagnitude, setMinMagnitude, isLoading, error } = useEarthquakes("http://localhost:8000/earthquakes","minMagnitude") // useEarthquakes es una funcion que devuelve un objeto
+    // Las {} después de const son desestructuración de objetos. La desestructuración de objetos es una característica de JavaScript que permite extraer propiedades de un objeto y guardarlas directamente en variables. En lugar de hacer 4 constantes escribes 1 y guardas todas las propiedades basicamente
 
     // MANEJADOR DE EVENTOS DEL FORMULARIO:
     function handleSubmit(event) {
