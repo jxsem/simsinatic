@@ -1,6 +1,7 @@
 // Importamos los componentes
 import EarthquakeList from "./components/EarthquakeList";
 import EarthquakesSpainList from "./components/EarthquakesSpainList";
+import Bienvenida from "./components/Bienvenida";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
@@ -10,6 +11,11 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
+                <Route
+                    path="/"
+                    element={<Bienvenida />}
+                />
+
                 <Route 
                     path="/earthquakes"
                     element={<EarthquakeList />}

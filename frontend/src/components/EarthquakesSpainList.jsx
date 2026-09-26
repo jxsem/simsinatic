@@ -20,6 +20,7 @@ function EarthquakeSpainList() {
             //Para hcer el fetch la mejor practica es con una funcion asincrona
             async function getEarthquakesSpain() {
                 setIsLoading(true);
+                setError(null); //<- null porque NO HAY NINGUN ERROR TODAVIA
                 //1- que INTENTE conectar con el endpoint del backend
                 try{
                     // y guardamos la respuesta en una constante
@@ -33,7 +34,8 @@ function EarthquakeSpainList() {
                     //y, si puede, actualiza el estado con la lista devuelva
                     setEarthquakeSpain(data)
                 } catch (error) {
-                    setError("No se ha podido cargar los terremotos")
+                    setError("No se ha podido cargar los terremotos") //<- CAMBIA EL ESTADO DE NULL A STRING
+                    setEarthquakeSpain([]) //<- QUE DEVUELVA LA LISTA VACIA
                 } finally {
                     setIsLoading(false)
                 }
@@ -46,21 +48,24 @@ function EarthquakeSpainList() {
         evento.preventDefault();
         const datosFormulario = new FormData(evento.currentTarget); //<- Coge el formulario que ha provocado este evento y crea con él un objeto FormData para poder leer sus campos.
         const valor = datosFormulario.get("magnitudMinima"); // <- Busca dentro de los datos del formulario el campo cuyo name sea magnitudMinima y dame su valor."
+        //Para resolver problemas de , o . (ejemplo: magnitud 4.2 o 4,2) es mejor reemplazar la , y el .
+        const valorNormalizado = valor.replace(",", ".");
 
-        setMinMagnitude(Number(valor)); //<- Lo de arriba produce un String asi que esta linea dice: Actualiza el estado minMagnitude con este número. 
+        setMinMagnitude(Number(valorNormalizado)); //<- Lo de arriba produce un String asi que esta linea dice: Actualiza el estado minMagnitude con este número. 
     }
 
     //Por último, se muestran los terremotos
     return (
         <div>
             <form onSubmit={formularioMagnitud}>  {/* <- significa que Cuando este formulario reciba un evento submit, ejecuta la función formularioMagnitud */}
-                <label htmlFor="magnitudMinima">
+                <label htmlFor="magnitudMinima" className="m-2">
                     Magnitud mínima:
                 </label>
                 <input className="m-2 p-1 border border-solid rounded-xl"
-                        type="number"
+                        type="text"
                         id="magnitudMinima"
                         name="magnitudMinima"
+                        // step={"any"} <- step le dice al navegador los valores validos avanzan de 0.0 al 9.9, siempre y cuando el input sea tipo number, en este caso como hemos optado a pasarlo a text no pasa nada, de hecho, tampoco se rompe 
                 />
                 <button
                     type="submit"
@@ -70,8 +75,9 @@ function EarthquakeSpainList() {
                 </button>
             </form>
             {isLoading && <p>Cargando...</p>}
-            {error && <p>{error}</p>}
+            
             <h1 className="m-2" >Terremotos de España</h1>
+            {error && <p className="m-2">{error}</p>}
             {earthquakeSpain.map((terremoto) => (
                 //Esto son props, datos que un componente PADRE le pasa a un componente hijo... -> el padre es earthquakespainlist que le pasa al hijo earthquakecardspain
                 <EarthquakeCardSpain

@@ -31,6 +31,7 @@ function EarthquakeList() {
         async function getEarthquakes() {
             // Iniciamos la carga marcando el indicador como verdadero.
             setIsLoading(true);
+            setError(null);
             try {
                 // Realizamos la petición HTTP incluyendo la magnitud mínima actual como Query Parameter.
                 const response = await fetch(
@@ -46,6 +47,7 @@ function EarthquakeList() {
             } catch (error) {
                 // Si hay un error de red o de parseo, capturamos el fallo y mostramos un mensaje amigable al usuario.
                 setError("No se pudieron cargar los terremotos");
+                setEarthquakes([])
             } finally {
                 // Se ejecuta SIEMPRE al terminar la petición (sea éxito o error) para ocultar el estado de carga.
                 setIsLoading(false);
@@ -72,7 +74,8 @@ function EarthquakeList() {
 
         // Convertimos el input (que siempre se lee como string) a tipo Number y actualizamos el estado.
         // Esto desencadena el useEffect declarado arriba.
-        setMinMagnitude(Number(value));
+        const valueFiltrado = value.replace(",", ".")
+        setMinMagnitude(Number(valueFiltrado));
     }
     // ESTRUCTURA VISUAL (JSX):
     return (
@@ -84,7 +87,7 @@ function EarthquakeList() {
                 </label>
                 <input
                     className="m-2 p-1 border border-solid rounded-xl"
-                    type="number"
+                    type="text"
                     id="minMagnitude"
                     name="minMagnitude" // El atributo 'name' es clave para que FormData() capture su valor
                 />
@@ -98,8 +101,10 @@ function EarthquakeList() {
             {/* RENDERIZADO CONDICIONAL: Evalúa el booleano isLoading. Si es true, muestra el texto de espera */}
             {isLoading && <p>Cargando...</p>}
             {/* RENDERIZADO CONDICIONAL: Si existe un mensaje de error (no es null), lo renderiza en pantalla */}
-            {error && <p>{error}</p>}
+            
             <div>
+                <h1>TERREMOTOS DEL MUNDO</h1>
+                {error && <p>{error}</p>}
                 {/* Transformamos la lista de terremotos en elementos componentes de React mediante .map() */}
                 {earthquakes.map((terremoto) => (
                     <EarthquakeCard
