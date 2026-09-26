@@ -66,6 +66,10 @@ function EarthquakeSpainList() {
                         id="magnitudMinima"
                         name="magnitudMinima"
                         // step={"any"} <- step le dice al navegador los valores validos avanzan de 0.0 al 9.9, siempre y cuando el input sea tipo number, en este caso como hemos optado a pasarlo a text no pasa nada, de hecho, tampoco se rompe 
+                        min={0}
+                        max={10}
+                        defaultValue={0}
+                        inputMode="decimal"
                 />
                 <button
                     type="submit"

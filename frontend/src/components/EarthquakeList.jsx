@@ -90,6 +90,10 @@ function EarthquakeList() {
                     type="text"
                     id="minMagnitude"
                     name="minMagnitude" // El atributo 'name' es clave para que FormData() capture su valor
+                    defaultValue={0}
+                    min={0}
+                    max={10}
+                    inputMode="decimal" //<- que teclado virtual aparece en los dispositivos móviles
                 />
                 <button
                     type="submit"
@@ -113,6 +117,7 @@ function EarthquakeList() {
                         key={terremoto.id}
                         place={terremoto.place}
                         magnitude={terremoto.magnitude}
+                        time={terremoto.time}
                     />
                 ))}
             </div>
