@@ -5,7 +5,7 @@ import useEarthquakes from "./hooks/useEarthquakes";
 
 function EarthquakeList() {
     // Como tenemos el useEarthquakes solamente tenemos que adjuntarle los parametros que va a recibir (los estados)
-    const { earthquakes, minMagnitude, setMinMagnitude, isLoading, error } = useEarthquakes("http://localhost:8000/earthquakes","minMagnitude") // useEarthquakes es una funcion que devuelve un objeto
+    const { earthquakes, minMagnitude, setMinMagnitude, isLoading, error } = useEarthquakes("http://localhost:8000/earthquakes","min_magnitude") // useEarthquakes es una funcion que devuelve un objeto
     // Las {} después de const son desestructuración de objetos. La desestructuración de objetos es una característica de JavaScript que permite extraer propiedades de un objeto y guardarlas directamente en variables. En lugar de hacer 4 constantes escribes 1 y guardas todas las propiedades basicamente
 
     // MANEJADOR DE EVENTOS DEL FORMULARIO:

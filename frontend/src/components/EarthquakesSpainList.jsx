@@ -4,7 +4,7 @@ import EarthquakeCardSpain from "./EarthquakeCardSpain";
 import useEarthquakes from "./hooks/useEarthquakes";
 
 function EarthquakeSpainList() {
-    const {earthquakes, minMagnitude, setMinMagnitude, isLoading, error } = useEarthquakes("http://localhost:8000/earthquakes/spain","minMagnitude")         
+    const {earthquakes, minMagnitude, setMinMagnitude, isLoading, error } = useEarthquakes("http://localhost:8000/earthquakes/spain","min_magnitud")         
     // ****** FORMULARIO ******
     function formularioMagnitud(evento){ //// Función que se ejecutará cuando este formulario se envíe
         evento.preventDefault();

@@ -87,7 +87,7 @@ async def obtenerTerremotos(min_magnitude: Annotated[float, Query(ge=0, le=10)] 
 #IMPORTANTE: ESTA API NO ES UN JSON
 IGN_URL = "https://www.ign.es/web/resources/sismologia/tproximos/terremotos.js"
 @app.get("/earthquakes/spain", response_model=list[EarthquakeSpain])
-async def obtenerTerremotosEspaña(min_magnitud: Annotated[float, Query(ge=0, le=9.9)] = 0, limit: Annotated[int, Query(ge=1, le=999)] = 999): #Es un parametro de query opcional, que busca por magnitud minima y por numero de terremotos de esa query
+async def obtenerTerremotosEspaña(min_magnitud: Annotated[float, Query(ge=0, le=10)] = 0, limit: Annotated[int, Query(ge=1, le=999)] = 999): #Es un parametro de query opcional, que busca por magnitud minima y por numero de terremotos de esa query
     async with httpx.AsyncClient(timeout=15) as client:
         try:
             response = await client.get(IGN_URL)
